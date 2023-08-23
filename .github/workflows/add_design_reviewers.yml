@@ -1,12 +1,12 @@
-name: Add Design Label and Request Reviews
+name: Request Reviews for Design Label
 
 on:
   pull_request:
     types:
-      - opened
+      - labeled
 
 jobs:
-  add-label-and-request-reviews:
+  request-reviews-on-label:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,20 +21,17 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Add Design Label
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const labels = ['Design'];
-            github.rest.issues.addLabels({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              labels: labels
-            });
+      - name: Check if "Design" label added
+        run: |
+          if [ "${{ github.event.label.name }}" == "Design" ]; then
+            echo "Label added: Design"
+          else
+            echo "Label not added: Design"
+            exit 78
+          fi
 
       - name: Request Reviews
+        if: ${{ success() }} # Only run if the previous step succeeded
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
