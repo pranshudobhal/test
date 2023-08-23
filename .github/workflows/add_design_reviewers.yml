@@ -10,36 +10,61 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-
-      # - name: Install dependencies
-      #   run: npm install
-
-      - name: Check if "Design" label added
-        run: |
-          if [ "${{ github.event.label.name }}" == "Design" ]; then
-            echo "Label added: Design"
-          else
-            echo "Label not added: Design"
-            exit 78
-          fi
-
-      - name: Request Reviews
-        if: ${{ success() }} # Only run if the previous step succeeded
+      - name: Check for Design label
+        id: check-label
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.MY_PAT }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const reviewers = ['pranshudobhal']; // Add your reviewers' usernames
+            const labels = context.payload.pull_request.labels.map(label => label.name);
+            core.setOutput('hasDesignLabel', labels.includes('Design'));
+
+      - name: Request Reviewers
+        if: steps.check-label.outputs.hasDesignLabel == 'true'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const reviewers = ['@pranshudobhal']; // Add your reviewers' usernames
             github.rest.pulls.requestReviewers({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: context.issue.number,
               reviewers: reviewers
             });
+
+
+    # steps:
+    #   - name: Checkout code
+    #     uses: actions/checkout@v3
+
+    #   - name: Set up Node.js
+    #     uses: actions/setup-node@v3
+    #     with:
+    #       node-version: 16
+
+    #   # - name: Install dependencies
+    #   #   run: npm install
+
+    #   - name: Check if "Design" label added
+    #     run: |
+    #       if [ "${{ github.event.label.name }}" == "Design" ]; then
+    #         echo "Label added: Design"
+    #       else
+    #         echo "Label not added: Design"
+    #         exit 78
+    #       fi
+
+      # - name: Request Reviews
+      #   if: ${{ success() }} # Only run if the previous step succeeded
+      #   uses: actions/github-script@v6
+      #   with:
+      #     github-token: ${{ secrets.MY_PAT }}
+      #     script: |
+      #       const reviewers = ['pranshudobhal']; // Add your reviewers' usernames
+      #       github.rest.pulls.requestReviewers({
+      #         owner: context.repo.owner,
+      #         repo: context.repo.repo,
+      #         pull_number: context.issue.number,
+      #         reviewers: reviewers
+      #       });
