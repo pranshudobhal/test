@@ -34,7 +34,7 @@ jobs:
         if: ${{ success() }} # Only run if the previous step succeeded
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.MY_PAT }}
           script: |
             const reviewers = ['@pranshudobhal']; // Add your reviewers' usernames
             github.rest.pulls.requestReviewers({
