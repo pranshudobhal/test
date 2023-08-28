@@ -25,7 +25,7 @@ jobs:
         with:
           github-token: ${{ secrets.MY_PAT }}
           script: |
-            const reviewers = ['pranshudobhal']; // Add your reviewers' usernames
+            const reviewers = ['lavanyasengar22']; // Add your reviewers' usernames
             github.rest.pulls.requestReviewers({
               owner: context.repo.owner,
               repo: context.repo.repo,
