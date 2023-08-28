@@ -14,7 +14,7 @@ jobs:
         id: check-label
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.MY_PAT }}
           script: |
             const labels = context.payload.pull_request.labels.map(label => label.name);
             core.setOutput('hasDesignLabel', labels.includes('Design'));
@@ -23,7 +23,7 @@ jobs:
         if: steps.check-label.outputs.hasDesignLabel == 'true'
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.MY_PAT }}
           script: |
             const reviewers = ['pranshudobhal']; // Add your reviewers' usernames
             github.rest.pulls.requestReviewers({
