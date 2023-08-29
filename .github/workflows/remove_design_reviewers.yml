@@ -20,11 +20,11 @@ jobs:
               repo: context.repo.repo,
               pull_number: issue_number
             });
-            const reviewersToKeep = pullRequest.requested_reviewers.filter(reviewer => reviewer.login !== 'lavanyasengar22');
-            github.rest.pulls.requestReviewers({
+          const reviewersToRemove = pullRequest.requested_reviewers.filter(reviewer => reviewer.login === 'lavanyasengar22');
+          github.rest.pulls.removeRequestedReviewers({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: issue_number,
-              reviewers: reviewersToKeep.map(reviewer => reviewer.login)
+              reviewers: reviewersToRemove.map(reviewer => reviewer.login)
             })
           }
