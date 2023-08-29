@@ -21,7 +21,7 @@ jobs:
               pull_number: issue_number
             });
             const reviewersToKeep = pullRequest.requested_reviewers.filter(reviewer => reviewer.login !== 'lavanyasengar22');
-            github.pulls.requestReviewers({
+            github.rest.pulls.requestReviewers({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: issue_number,
