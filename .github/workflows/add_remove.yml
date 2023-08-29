@@ -1,0 +1,39 @@
+name: Label-based Review Assignment
+
+on:
+  pull_request:
+    types: [labeled, unlabeled]
+
+jobs:
+  assign_and_remove_reviewers:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      
+    - name: Add/Remove Reviewers
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const reviewersByLabel = JSON.parse(fs.readFileSync('.github/design_reviewers.json', 'utf8'));
+          const issue_number = context.issue.number;
+          const labelName = context.payload.label.name;
+          if (Object.keys(reviewersByLabel).includes(labelName)) {
+            if (context.payload.action === 'labeled') {
+              github.rest.pulls.requestReviewers({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: issue_number,
+                reviewers: reviewersByLabel[labelName]
+              });
+            }
+            if (context.payload.action === 'unlabeled') {
+              github.rest.pulls.removeRequestedReviewers({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: issue_number,
+                reviewers: reviewersByLabel[labelName]
+              });
+            }
+          }
