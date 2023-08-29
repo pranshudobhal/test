@@ -1,4 +1,4 @@
-name: Label-based Review Assignment
+name: Label-based Reviewer Assignment
 
 on:
   pull_request:
@@ -16,9 +16,13 @@ jobs:
       with:
         script: |
           const fs = require('fs');
+
           const reviewersByLabel = JSON.parse(fs.readFileSync('.github/design_reviewers.json', 'utf8'));
+          
           const issue_number = context.issue.number;
+          
           const labelName = context.payload.label.name;
+          
           if (Object.keys(reviewersByLabel).includes(labelName)) {
             if (context.payload.action === 'labeled') {
               github.rest.pulls.requestReviewers({
@@ -28,6 +32,7 @@ jobs:
                 reviewers: reviewersByLabel[labelName]
               });
             }
+            
             if (context.payload.action === 'unlabeled') {
               github.rest.pulls.removeRequestedReviewers({
                 owner: context.repo.owner,
