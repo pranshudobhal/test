@@ -12,7 +12,6 @@ jobs:
     - name: Remove Reviewer
       uses: actions/github-script@v6
       with:
-        github-token: ${{ secrets.MY_PAT }}
         script: |
           const issue_number = context.issue.number;
           if (context.payload.label.name === 'Design') {
