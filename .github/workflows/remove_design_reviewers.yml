@@ -1,1 +1,30 @@
+name: Remove a Reviewer based on label
 
+on:
+  pull_request:
+    types: [unlabeled]
+
+jobs:
+  remove_reviewer:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Remove Reviewer
+      uses: actions/github-script@v3
+      with:
+        github-token: ${{secrets.MY_PAT}}
+        script: |
+          const issue_number = context.issue.number;
+          if (context.payload.label.name === 'your-label') {
+            const { data: pr } = await github.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: issue_number
+            });
+            const reviewersToKeep = pr.requested_reviewers.filter(reviewer => reviewer.login !== 'reviewer-usernames');
+            github.pulls.requestReviewers({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: issue_number,
+              reviewers: reviewersToKeep.map(reviewer => reviewer.login)
+            })
+          }
