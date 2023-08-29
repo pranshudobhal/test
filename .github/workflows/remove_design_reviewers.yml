@@ -16,7 +16,7 @@ jobs:
         script: |
           const issue_number = context.issue.number;
           if (context.payload.label.name === 'Design') {
-            const { data: pr } = await github.pulls.get({
+            const { data: pullRequest } = await github.rest.pulls.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: issue_number
