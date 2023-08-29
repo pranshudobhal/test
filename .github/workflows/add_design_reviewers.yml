@@ -23,9 +23,8 @@ jobs:
         if: steps.check-label.outputs.hasDesignLabel == 'true'
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.MY_PAT }}
           script: |
-            const reviewers = ['lavanyasengar22']; // Add your reviewers' usernames
+            const reviewers = ['lavanyasengar22'];
             github.rest.pulls.requestReviewers({
               owner: context.repo.owner,
               repo: context.repo.repo,
